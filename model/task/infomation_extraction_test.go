@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/DnullP/GraphLang-GO/task"
+	"github.com/DnullP/GraphLang-GO/model/task"
 )
 
 func TestExtractInfomation(t *testing.T) {
@@ -17,6 +17,6 @@ func TestExtractInfomation(t *testing.T) {
 	fmt.Println(entities...)
 	for _, entity := range entities {
 		name := entity.(map[string]interface{})["name"].(string)
-		task.ExtractInfomation(string(text), name)
+		fmt.Println(task.ExtractInfomation(string(text), name))
 	}
 }

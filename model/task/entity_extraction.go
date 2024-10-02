@@ -9,7 +9,19 @@ import (
 
 var prompt_entity string = "你的任务是文本中提取重要人物、地点、组织、物品、概念等对象，返回格式为：{\"obj\": [{\"name\": \"xxx\", \"type\": \"xxx\"}, ...]}：只返回json表即可，不要输出其他内容type字段应该尽量简短"
 
-// das
+/*
+Returned data format is below:
+
+	{
+		"obj": [
+			{
+				"name": "xxx",
+				"type": "xxx"
+			},
+			...
+		]
+	}
+*/
 func ExtractEntities(text string) []interface{} {
 
 	jsonRaw := model.GlobelModel.Input(text + prompt_entity)

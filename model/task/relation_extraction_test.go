@@ -5,7 +5,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/DnullP/GraphLang-GO/task"
+	"github.com/DnullP/GraphLang-GO/model/task"
 )
 
 func TestExtracteRelation(t *testing.T) {
@@ -19,5 +19,9 @@ func TestExtracteRelation(t *testing.T) {
 	}
 	fmt.Println(entities)
 
-	task.ExtractRelations(string(text), entities)
+	relationList := task.ExtractRelations(string(text), entities)
+
+	for _, relation := range relationList {
+		fmt.Println(relation)
+	}
 }

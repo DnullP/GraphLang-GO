@@ -6,7 +6,7 @@ import (
 	"os"
 	"testing"
 
-	"github.com/DnullP/GraphLang-GO/task"
+	"github.com/DnullP/GraphLang-GO/model/task"
 )
 
 func LogJsonData(data map[string]interface{}) {
