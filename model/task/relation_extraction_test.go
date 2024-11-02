@@ -9,7 +9,7 @@ import (
 )
 
 func TestExtracteRelation(t *testing.T) {
-	text, ok := os.ReadFile("../text.txt")
+	text, ok := os.ReadFile("../../text.txt")
 	if ok != nil {
 		fmt.Println(ok.Error())
 	}

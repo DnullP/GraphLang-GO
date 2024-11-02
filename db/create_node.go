@@ -38,14 +38,18 @@ func CreateNode(nodes *[]Node) {
 func addNode(session neo4j.SessionWithContext, node Node) error {
 
 	_, err := session.ExecuteWrite(context.Background(), func(tx neo4j.ManagedTransaction) (interface{}, error) {
-		query := `
-            CREATE (n:Person {name: $name, description: $description, tag: $tag})
-            RETURN n
-        `
+
+		query := fmt.Sprintf(`
+        MERGE (n:%s {name: $name, tag: $tag})
+            ON CREATE SET n.descriptions = $descriptions
+            ON MATCH SET n.descriptions = coalesce(n.descriptions, []) + $newDescriptions
+            RETURN n`, node.Tag)
+
 		params := map[string]interface{}{
-			"name":        node.Name,
-			"description": node.Description,
-			"tag":         node.Tag,
+			"name":            node.Name,
+			"descriptions":    node.Description,
+			"newDescriptions": node.Description,
+			"tag":             node.Tag,
 		}
 
 		result, err := tx.Run(context.Background(), query, params)

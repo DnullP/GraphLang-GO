@@ -14,6 +14,7 @@ type Relationship struct {
 	ToName      string
 	ToTag       string
 	Description string
+	Relation    string
 }
 
 func CreateRelation(relations *[]Relationship) {
@@ -41,13 +42,13 @@ func CreateRelation(relations *[]Relationship) {
 
 func addRelationship(session neo4j.SessionWithContext, rel Relationship) error {
 	_, err := session.ExecuteWrite(context.Background(), func(tx neo4j.ManagedTransaction) (interface{}, error) {
-		// 使用参数化查询以防止注入攻击
-		query := `
-            MATCH (a:Person {name: $fromName, tag: $fromTag})
-            MATCH (b:Person {name: $toName, tag: $toTag})
-            CREATE (a)-[:KNOWS {description: $description}]->(b)
+		query := fmt.Sprintf(`
+            MATCH (a:`+"`%s`"+` {name: $fromName, tag: $fromTag})
+            MATCH (b:`+"`%s`"+` {name: $toName, tag: $toTag})
+            CREATE (a)-[:`+"`%s`"+` {description: $description}]->(b)
             RETURN a, b
-        `
+        `, rel.FromTag, rel.ToTag, rel.Relation)
+
 		params := map[string]interface{}{
 			"fromName":    rel.FromName,
 			"fromTag":     rel.FromTag,
