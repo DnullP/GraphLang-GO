@@ -3,13 +3,14 @@ package task
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"strings"
 
 	"github.com/DnullP/GraphLang-GO/model"
 )
 
 var prompt_relation_1 string = "你的任务是从上述文本中提取出关于下面对象实体之间的关系, 关系不超过4个字, 关系描述不超过15个字, 每个对象可作为主体或者客体"
-var prompt_relation_2 string = `并以{"relation": [{"rel":"rel_content","sub":"obj1", "obj":"obj2", "description": "sth"}, ...]}的json格式返回, 你只需要输出json即可, 不需要其他任何内容`
+var prompt_relation_2 string = `并以{"relation": [{"rel":"rel_content","sub":"obj1", "obj":"obj2", "description": "sth"}, ...]}的json格式返回,你不用返回不存在的关系,你只需要输出json即可, 不需要其他任何内容`
 
 type Relation struct {
 	Sub         string
@@ -20,24 +21,29 @@ type Relation struct {
 
 /*
 Returned data format is as below:
-{
-    "relation": [
-        {
-            "rel": "rel_content",
-            "sub": "obj1",
-            "obj": "obj2",
-            "description": "sth"
-        }, ...
-    ]
-}
+
+	{
+	    "relation": [
+	        {
+	            "rel": "rel_content",
+	            "sub": "obj1",
+	            "obj": "obj2",
+	            "description": "sth"
+	        }, ...
+	    ]
+	}
 */
 func ExtractRelations(text string, entities []string) []Relation {
 
 	jsonRaw := model.GlobelModel.Input(text + prompt_relation_1 + strings.Join(entities, "\n") + "\n" + prompt_relation_2)
 	jsonRaw = removeFirstAndLastLine(jsonRaw)
 	var jsonData map[string]interface{}
-	json.Unmarshal([]byte(jsonRaw), &jsonData)
-
+	err := json.Unmarshal([]byte(jsonRaw), &jsonData)
+	if err != nil {
+		log.Println(err)
+		return nil
+	}
+	
 	relations := jsonData["relation"].([]interface{})
 	relationList := make([]Relation, 0)
 
