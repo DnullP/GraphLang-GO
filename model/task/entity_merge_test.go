@@ -40,7 +40,7 @@ func TestMergeEntities(t *testing.T) {
 		},
 		{
 			name:     "Test with empty list",
-			entities: []string{"岩永", "岩永小姐", "岩永琴子", "九郎先生", "樱川九郎", "琴子", "纱季", "九郎"},
+			entities: []string{"岩永", "岩永小姐", "岩永琴子", "九郎先生", "樱川九郎", "琴子", "纱季", "九郎", "九郎先生的女友", "九郎先生的堂姐", "六花小姐", "护士", "医生", "纱季小姐", "六花", "护士小姐", "护士们", "女孩", "她(琴子)", "青年", "女士", "九郎的女友(纱季)"},
 			expected: map[string]interface{}{},
 		},
 	}
