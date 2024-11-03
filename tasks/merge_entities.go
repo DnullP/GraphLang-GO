@@ -13,10 +13,24 @@ func MergeEntites(entities []string) {
 
 	for baseName, nameSets := range results {
 		fmt.Println(baseName, nameSets)
+
+		//选取的名字有时候不在对象集合中
+		inSet := false
+		for _, name := range nameSets.([]interface{}) {
+			if baseName == name.(string) {
+				inSet = true
+				break
+			}
+		}
+		if !inSet {
+			continue
+		}
+
 		for _, name := range nameSets.([]interface{}) {
 			if name.(string) == baseName {
 				continue
 			}
+
 			db.MergeNode(baseName, name.(string))
 			log.Println(baseName, name)
 		}
