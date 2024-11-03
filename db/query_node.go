@@ -8,8 +8,50 @@ import (
 	"github.com/neo4j/neo4j-go-driver/v5/neo4j"
 )
 
-func QueryNearbyNode(name string) {
+func QueryNearbyNode(name string) (any, error) {
+	session := neo4jDB.NewSession(context.Background(), neo4j.SessionConfig{
+		AccessMode: neo4j.AccessModeRead,
+	})
+	defer func() {
+		if err := session.Close(context.Background()); err != nil {
+			log.Fatalf("无法关闭会话: %v", err)
+		}
+	}()
+	result, err := session.ExecuteRead(context.Background(), func(tx neo4j.ManagedTransaction) (any, error) {
+		// 构建 Cypher 查询
+		query := `
+	        MATCH (n {name:$name})-[r]->(m)
+			return m, collect(r) as rel
+	    `
 
+		// 执行查询
+		records, err := tx.Run(context.Background(), query, map[string]any{
+			"name": name,
+		})
+		if err != nil {
+			return nil, err
+		}
+
+		// 收集节点信息
+		resultDTO := make([]any, 0)
+		for records.Next(context.Background()) {
+			record := records.Record()
+			node, _ := record.Get("m")
+			fmt.Println(node)
+			rel, _ := record.Get("rel")
+			resultDTO = append(resultDTO, rel)
+		}
+		// 检查迭代器错误
+		if err = records.Err(); err != nil {
+			return nil, err
+		}
+
+		return resultDTO, nil
+	})
+	if err != nil {
+		return nil, err
+	}
+	return result, nil
 }
 
 func QueryNodeWithTag(tag string) []string {
